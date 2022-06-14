@@ -1,2 +1,48 @@
-Code python
-Thành Đạt
+from requests import *
+import time
+
+t=[
+	'397a7fb0d1e811eca462957b5204fdf1',
+	'429235c0d1ca11eca19befd8b74558ba'
+]
+
+def cho(tg):
+	for j in range(tg,0,-1):
+		print('cho',j,'giay ',end='\r')
+		time.sleep(1)
+
+def token(to):
+	url='http://tuberocket.app:3000/api/version-check'
+	ver=str(get(url=url).json()['result']['version_android'])
+	
+	url='http://tuberocket.app:3000/api/signIn'
+	head={
+		'token' : to,
+		'versionCode' : ver
+	}
+	return post(url=url,headers=head).json()
+
+def xem(to):
+	url='http://tuberocket.app:3000/api/video'
+	head={'token' : to}
+	dl=get(url=url,headers=head).json()
+	return dl['result']['videoId'],dl['result']['playSecond']
+
+def nhan(to,id):
+	url='http://tuberocket.app:3000/api/video'
+	head={
+		'token' : to,
+		'Content-Type' : 'application/json; charset=UTF-8'
+	}
+	data='{"id":"'+id+'","playCount":0,"playSecond":0,"boost":0,"status":""}'
+	print(put(url=url,headers=head,data=data).json())
+
+#  BEGIN
+i=int(input('nhap: '))
+to=token(t[i])['result']['token']
+
+print(get(url='http://tuberocket.app:3000/api/member',headers={'token' : to}).json()['result']['coin'])
+while True:
+	id,tg=xem(to)
+	cho(tg)
+	nhan(to,id)
